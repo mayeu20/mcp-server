@@ -23,6 +23,7 @@ import {
   ListResourcesRequestSchema,
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import https from 'https';
 
 const API_BASE = 'https://www.nerdychefs.ai/api';
 
@@ -37,6 +38,23 @@ const cache = {
   ttl: 5 * 60 * 1000 // 5 minutes
 };
 
+// HTTPS fetch function (works better with corporate proxies on Windows)
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(new Error('Invalid JSON response'));
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
 // Fetch with caching
 async function fetchWithCache(endpoint) {
   const now = Date.now();
@@ -47,11 +65,7 @@ async function fetchWithCache(endpoint) {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/${endpoint}`);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    const data = await response.json();
+    const data = await httpsGet(`${API_BASE}/${endpoint}`);
     cache[cacheKey] = data;
     cache.lastFetch = now;
     return data;
