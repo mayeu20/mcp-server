@@ -24,7 +24,9 @@ cd mcp-server
 npm install
 ```
 
-2. Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+2. Add to your Claude Desktop config:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -32,6 +34,19 @@ npm install
     "nerdychefs": {
       "command": "node",
       "args": ["/path/to/mcp-server/index.js"]
+    }
+  }
+}
+```
+
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "nerdychefs": {
+      "command": "node",
+      "args": ["C:\\Users\\YourUsername\\mcp-server\\index.js"]
     }
   }
 }
