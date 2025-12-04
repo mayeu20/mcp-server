@@ -67,10 +67,40 @@ Add to your Cursor MCP settings:
 }
 ```
 
-### Via npx (coming soon)
+### Via npx (Recommended)
+
+The easiest way - no installation required:
 
 ```bash
 npx @nerdychefs/mcp-server
+```
+
+Or add to your Claude Desktop config directly:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "nerdychefs": {
+      "command": "npx",
+      "args": ["-y", "@nerdychefs/mcp-server"]
+    }
+  }
+}
+```
+
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "nerdychefs": {
+      "command": "npx",
+      "args": ["-y", "@nerdychefs/mcp-server"]
+    }
+  }
+}
 ```
 
 ## Available Tools

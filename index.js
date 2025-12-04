@@ -25,7 +25,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import https from 'https';
 
-const API_BASE = 'https://api.nerdychefs.ai';
+const API_BASE = 'https://www.nerdychefs.ai/api';
 
 // Cache for API responses
 const cache = {
@@ -503,21 +503,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Define resources (for browsing prompts as documents)
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
-  const data = await fetchWithCache('categories.json');
+  const [categoriesData, packsData] = await Promise.all([
+    fetchWithCache('categories.json'),
+    fetchWithCache('packs.json')
+  ]);
 
-  return {
-    resources: data.categories.map(cat => ({
+  const resources = [
+    // Categories
+    ...categoriesData.categories.map(cat => ({
       uri: `nerdychefs://category/${cat.id}`,
-      name: cat.name,
+      name: `📁 ${cat.name}`,
       description: `${cat.description} (${cat.prompt_count} prompts)`,
       mimeType: 'application/json'
+    })),
+    // Packs
+    ...packsData.packs.map(pack => ({
+      uri: `nerdychefs://pack/${encodeURIComponent(pack.title)}`,
+      name: `📦 ${pack.title}`,
+      description: `${pack.description} (${pack.total_prompts} prompts)`,
+      mimeType: 'application/json'
     }))
-  };
+  ];
+
+  return { resources };
 });
 
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const { uri } = request.params;
 
+  // Handle category resources
   if (uri.startsWith('nerdychefs://category/')) {
     const categoryId = uri.replace('nerdychefs://category/', '');
     const categoriesData = await fetchWithCache('categories.json');
@@ -541,8 +555,81 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
             category: category.name,
             description: category.description,
             prompt_count: prompts.length,
-            prompts: prompts
+            prompts: prompts.map(p => ({
+              id: p.id,
+              title: p.title,
+              prompt: p.prompt,
+              use_case: p.use_case,
+              tags: p.tags
+            }))
           }, null, 2)
+        }
+      ]
+    };
+  }
+
+  // Handle pack resources
+  if (uri.startsWith('nerdychefs://pack/')) {
+    const packTitle = decodeURIComponent(uri.replace('nerdychefs://pack/', ''));
+    const promptsData = await fetchWithCache('prompts.json');
+
+    const prompts = promptsData.prompts.filter(p =>
+      p.pack_title.toLowerCase() === packTitle.toLowerCase()
+    );
+
+    if (prompts.length === 0) {
+      throw new Error(`Pack not found: ${packTitle}`);
+    }
+
+    // Group by subcategory
+    const sections = {};
+    prompts.forEach(p => {
+      if (!sections[p.subcategory]) {
+        sections[p.subcategory] = [];
+      }
+      sections[p.subcategory].push({
+        id: p.id,
+        title: p.title,
+        prompt: p.prompt,
+        use_case: p.use_case,
+        tags: p.tags
+      });
+    });
+
+    return {
+      contents: [
+        {
+          uri,
+          mimeType: 'application/json',
+          text: JSON.stringify({
+            pack: packTitle,
+            total_prompts: prompts.length,
+            sections: Object.entries(sections).map(([name, items]) => ({
+              name,
+              prompts: items
+            }))
+          }, null, 2)
+        }
+      ]
+    };
+  }
+
+  // Handle individual prompt resources
+  if (uri.startsWith('nerdychefs://prompt/')) {
+    const promptId = parseInt(uri.replace('nerdychefs://prompt/', ''), 10);
+    const promptsData = await fetchWithCache('prompts.json');
+    const prompt = promptsData.prompts.find(p => p.id === promptId);
+
+    if (!prompt) {
+      throw new Error(`Prompt not found: ${promptId}`);
+    }
+
+    return {
+      contents: [
+        {
+          uri,
+          mimeType: 'text/markdown',
+          text: `# ${prompt.title}\n\n**Category:** ${prompt.category} > ${prompt.subcategory}\n**Pack:** ${prompt.pack_title}\n**Use Case:** ${prompt.use_case}\n**Tags:** ${prompt.tags.join(', ')}\n**Personas:** ${prompt.personas.join(', ')}\n\n---\n\n${prompt.prompt}`
         }
       ]
     };

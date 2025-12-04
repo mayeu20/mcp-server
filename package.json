@@ -16,14 +16,30 @@
     "model-context-protocol",
     "ai-prompts",
     "claude",
-    "nerdychefs"
+    "claude-desktop",
+    "cursor",
+    "prompts",
+    "prompt-library",
+    "nerdychefs",
+    "anthropic"
   ],
   "author": "NerdyChefs <mathieu@nerdychefs.ai>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nerdychefs/mcp-server"
+    "url": "git+https://github.com/mayeu20/mcp-server.git"
   },
+  "homepage": "https://www.nerdychefs.ai",
+  "bugs": {
+    "url": "https://github.com/mayeu20/mcp-server/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "index.js",
+    "README.md"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   }
