@@ -1,0 +1,30 @@
+{
+  "name": "@nerdychefs/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server providing access to 900+ AI prompts from NerdyChefs.ai",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "nerdychefs-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-prompts",
+    "claude",
+    "nerdychefs"
+  ],
+  "author": "NerdyChefs <mathieu@nerdychefs.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nerdychefs/mcp-server"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}
