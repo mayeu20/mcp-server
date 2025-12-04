@@ -19,7 +19,7 @@ Access 900+ professional AI prompts directly in Claude, Cursor, and other MCP-co
 
 ```bash
 # Clone and install
-git clone https://github.com/nerdychefs/mcp-server.git
+git clone https://github.com/mayeu20/mcp-server.git
 cd mcp-server
 npm install
 ```
