@@ -25,7 +25,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import https from 'https';
 
-const API_BASE = 'https://www.nerdychefs.ai/api';
+const API_BASE = 'https://api.nerdychefs.ai';
 
 // Cache for API responses
 const cache = {
