@@ -67,9 +67,20 @@ Add to your Cursor MCP settings:
 }
 ```
 
-### Via npx (Recommended)
+### Via npm (Recommended)
 
-The easiest way - no installation required:
+```bash
+npm install -g @nerdychefs/mcp-server
+```
+
+Then run:
+```bash
+nerdychefs-mcp
+```
+
+### Via npx
+
+No installation required:
 
 ```bash
 npx @nerdychefs/mcp-server
